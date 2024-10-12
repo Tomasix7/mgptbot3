@@ -22,7 +22,7 @@ class TimeZoneManager:
         if 0 <= current_hour < 2:
             prompt_file = 'goodnight_prompt.txt'
         elif 2 <= current_hour < 4:
-            prompt_file = 'sleepwell_prompt.txt'
+            prompt_file = 'connect_prompt.txt'
         elif 4 <= current_hour < 6:
             prompt_file = 'sleepwell_prompt.txt'
         elif 6 <= current_hour < 7:
@@ -36,7 +36,7 @@ class TimeZoneManager:
         elif 10 <= current_hour < 11:
             prompt_file = '10_prompt.txt'
         elif 11 <= current_hour < 12:
-            prompt_file = 'meditation_prompt.txt'
+            prompt_file = 'funny_prompt.txt'
         elif 12 <= current_hour < 13:
             prompt_file = 'lunch_prompt.txt'
         elif 13 <= current_hour < 14:

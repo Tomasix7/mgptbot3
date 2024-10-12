@@ -7,9 +7,9 @@ import random
 import pytz
 from pytz import all_timezones_set
 import re
-from time_zone_manager import TimeZoneManager  # Импортируй свой модуль для управления часовыми поясами
-from config import client_groq, bot  # Импортируй клиента и бота из твоего файла конфигурации
-from dialogue_storage import dialogue_storage  # Импортируй класс хранения диалогов
+from time_zone_manager import TimeZoneManager  # Импортируем свой модуль для управления часовыми поясами
+from config import client_groq, bot  # Импортируем клиента и бота из файла конфигурации
+from dialogue_storage import dialogue_storage  # Импортируем класс хранения диалогов
 from unsplash_functions import get_random_image
 
 # Настройка логирования
@@ -112,11 +112,11 @@ def process_response(response, chat_id, bot, users_gender):
         cleaned_response = truncate_repeating_text(response_content)
         logging.info(f'Очищенный ответ: {cleaned_response}')
 
-        image_url = get_random_image(users_gender)
-        if image_url:
-            bot.send_photo(chat_id, image_url)
-        else:
-            logging.error("url изображения так не получается...")
+        # image_url = get_random_image(users_gender)
+        # if image_url:
+        #     bot.send_photo(chat_id, image_url)
+        # else:
+        #     logging.error("url изображения так не получается...")
 
         send_long_message(chat_id, bot, cleaned_response)
         dialogue_storage.add_message(chat_id, 'assistant', cleaned_response)
@@ -133,6 +133,31 @@ def send_long_message(chat_id, bot, message):
 
 def send_scheduled_message(object_id):
     try:
+        # Отключение отправки сообщения в тихие часы.
+        if object_id == "670543779eed55e5c40145ea": # ал
+            # Создаем часовой пояс UTC+5
+            utc_plus_5 = pytz.FixedOffset(5 * 60)  # 5 hours * 60 minutes
+            
+            # Получаем текущее время в UTC+5
+            current_time = datetime.now(utc_plus_5)
+            
+            # Проверяем, попадает ли время в диапазон с 1 до 6 утра UTC+5
+            if 0 <= current_time.hour < 6:
+                logging.info(f"Скрипт завершен: ObjectID {object_id}, время {current_time.strftime('%H:%M')} UTC+5")
+                return  # Завершаем выполнение функции
+        
+        if object_id == "66fe7107ba9a8734f34b71cd": # мн
+            # Создаем часовой пояс UTC+3
+            utc_plus_3 = pytz.FixedOffset(3 * 60)  # 3 hours * 60 minutes
+            
+            # Получаем текущее время в UTC+3
+            current_time = datetime.now(utc_plus_3)
+            
+            # Проверяем, попадает ли время в диапазон с 1 до 6 утра UTC+3
+            if 1 <= current_time.hour < 5:
+                logging.info(f"Скрипт завершен: ObjectID {object_id}, время {current_time.strftime('%H:%M')} UTC+3")
+                return  # Завершаем выполнение функции
+            
         # Получаем данные пользователя и персонажа из базы по ObjectID
         character_info, users_gender, timezone_offset, chat_id = get_user_and_character_data(object_id)
 
@@ -161,17 +186,6 @@ def send_scheduled_message(object_id):
         now = datetime.now(tz_manager.default_timezone)
         today = now.strftime("%d.%m.%Y")
         current_time = now.strftime("%H:%M")
-
-        # # Определяем время суток
-        # hour = now.hour
-        # if 5 <= hour < 12:
-        #     time_of_day = "утро"
-        # elif 12 <= hour < 18:
-        #     time_of_day = "день"
-        # elif 18 <= hour < 23:
-        #     time_of_day = "вечер"
-        # else:
-        #     time_of_day = "ночь"
 
         # # Добавляем случайные элементы в сообщение
         today_elements = random.sample(time_based_elements, 2)

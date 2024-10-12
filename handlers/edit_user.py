@@ -31,24 +31,28 @@ def start_edit_user(message):
         return
     
     chat_id = message.chat.id
-    bot.send_message(chat_id, "Пожалуйста, введите ObjectId документа для редактирования:")
-    bot.register_next_step_handler(message, get_object_id)
+    bot.send_message(chat_id, "Пожалуйста, введите chat_id пользователя для редактирования:")
+    bot.register_next_step_handler(message, find_user_by_chat_id)
 
-def get_object_id(message):
-    chat_id = message.chat.id
-    object_id = message.text.strip()
+def find_user_by_chat_id(message):
+    admin_chat_id = message.chat.id
+    user_chat_id = message.text.strip()
     
-    try:
-        document = collection.find_one({"_id": ObjectId(object_id)})
-        if not document:
-            bot.send_message(chat_id, "Документ не найден.")
-            return
-        
-        edit_states[chat_id] = {"document": document, "current_field": "chat_id"}
-        bot.send_message(chat_id, f"Текущий chat_id: {document['chat_id']}\nВведите новый chat_id или отправьте '-' чтобы оставить текущее значение без изменений:")
-        bot.register_next_step_handler(message, process_edit)
-    except:
-        bot.send_message(chat_id, "Неверный формат ObjectId.")
+    if not user_chat_id.isdigit():
+        bot.send_message(admin_chat_id, "chat_id должен быть целым числом. Попробуйте снова.")
+        bot.register_next_step_handler(message, find_user_by_chat_id)
+        return
+    
+    user_chat_id = int(user_chat_id)
+    document = collection.find_one({"chat_id": user_chat_id})
+    
+    if not document:
+        bot.send_message(admin_chat_id, "Пользователь с таким chat_id не найден.")
+        return
+    
+    edit_states[admin_chat_id] = {"document": document, "current_field": "chat_id"}
+    bot.send_message(admin_chat_id, f"Найден пользователь с chat_id: {user_chat_id}\nТекущий chat_id: {document['chat_id']}\nВведите новый chat_id или отправьте '-' чтобы оставить текущее значение без изменений:")
+    bot.register_next_step_handler(message, process_edit)
 
 def process_edit(message):
     chat_id = message.chat.id
@@ -134,4 +138,4 @@ def save_changes(chat_id):
     
     del edit_states[chat_id]
 
-# Остальной код бота...
+# The END of код бота
