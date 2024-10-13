@@ -11,10 +11,9 @@ def get_random_image(gender):
     try:
         url = "https://api.unsplash.com/photos/random"
         query = """
-        man back, man body, bodybuilding, abs, gym, underwear, male, love images, kiss images,
-        roses, laboratory, coffee, tea
+        nature
         """ if gender == "female" else """
-        girl back, lingerie, female, roses, laboratory, coffee, tea
+        lingerie
         """
         params = {
             "client_id": UNSPLASH_ACCESS_KEY,

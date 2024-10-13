@@ -112,11 +112,11 @@ def process_response(response, chat_id, bot, users_gender):
         cleaned_response = truncate_repeating_text(response_content)
         logging.info(f'Очищенный ответ: {cleaned_response}')
 
-        # image_url = get_random_image(users_gender)
-        # if image_url:
-        #     bot.send_photo(chat_id, image_url)
-        # else:
-        #     logging.error("url изображения так не получается...")
+        image_url = get_random_image(users_gender)
+        if image_url:
+            bot.send_photo(chat_id, image_url)
+        else:
+            logging.error("url изображения так не получается...")
 
         send_long_message(chat_id, bot, cleaned_response)
         dialogue_storage.add_message(chat_id, 'assistant', cleaned_response)
