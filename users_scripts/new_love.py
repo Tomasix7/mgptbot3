@@ -1,4 +1,7 @@
 import os
+import sys
+# Добавляем путь к корневому каталогу проекта, чтобы импорт сверху проходил
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import logging
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -11,6 +14,7 @@ from time_zone_manager import TimeZoneManager  # Импортируем свой
 from config import client_groq, bot  # Импортируем клиента и бота из файла конфигурации
 from dialogue_storage import dialogue_storage  # Импортируем класс хранения диалогов
 from unsplash_functions import get_random_image
+from devart import send_deviantart_image
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -240,7 +244,9 @@ def send_scheduled_message(object_id):
         bot.send_message(chat_id, "Что-то пошло не так... 😊")
 
 if __name__ == '__main__':
-    import sys
+    # Вызов DeviantArt функции перед send_scheduled_message
+    send_deviantart_image()
+
     if len(sys.argv) != 2:
         logging.error("Неверное количество аргументов. Ожидался один аргумент - ObjectID.")
     else:

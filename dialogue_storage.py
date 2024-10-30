@@ -3,6 +3,8 @@ from datetime import datetime
 import logging
 import os
 import pytz
+from dotenv import load_dotenv
+load_dotenv()
 
 # Создаем объект часового пояса UTC+3
 tz = pytz.timezone('Europe/Moscow')  # Замените на нужную временную зону
