@@ -145,8 +145,9 @@ def send_scheduled_message(object_id):
             # Получаем текущее время в UTC+5
             current_time = datetime.now(utc_plus_5)
             
-            # Проверяем, попадает ли время в диапазон с 1 до 6 утра UTC+5
-            if 0 <= current_time.hour < 6:
+            # Проверяем, попадает ли время в заданный диапазон UTC+5
+            if current_time.hour < 7 or 10 < current_time.hour < 11 or 13 <= current_time.hour < 18:
+            # if current_time.hour < 7 or 10 < current_time.hour < 12:
                 logging.info(f"Скрипт завершен: ObjectID {object_id}, время {current_time.strftime('%H:%M')} UTC+5")
                 return  # Завершаем выполнение функции
         
@@ -157,8 +158,8 @@ def send_scheduled_message(object_id):
             # Получаем текущее время в UTC+3
             current_time = datetime.now(utc_plus_3)
             
-            # Проверяем, попадает ли время в диапазон с 1 до 6 утра UTC+3
-            if 1 <= current_time.hour < 5:
+            # Проверяем, попадает ли время в заданный  диапазон UTC+3
+            if current_time.hour < 7 or 10 < current_time.hour < 11 or 13 <= current_time.hour < 18:
                 logging.info(f"Скрипт завершен: ObjectID {object_id}, время {current_time.strftime('%H:%M')} UTC+3")
                 return  # Завершаем выполнение функции
             

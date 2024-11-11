@@ -65,14 +65,15 @@ def send_deviantart_image():
         send_image_to_telegram(image_data)
 
 
-
-# # Для запуска файла напрямую из терминала
 # def send_image_to_telegram(image_data):
 #     """Отправляем изображение в Telegram"""
 #     if image_data:
-#         bot.send_photo(CHAT_ID, photo=image_data['image_url'], caption=f"{image_data['title']}\n{image_data['url']}")
+#         # Форматируем сообщение с короткой ссылкой
+#         caption_text = f"{image_data['title']}\n[link]({image_data['url']})"
+#         bot.send_photo(CHAT_ID, photo=image_data['image_url'], caption=caption_text, parse_mode='Markdown')
 #     else:
 #         print("Нет данных для отправки")
+
 
 # # Run
 # def main():
