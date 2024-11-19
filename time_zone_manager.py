@@ -54,7 +54,7 @@ class TimeZoneManager:
         elif 19 <= current_hour < 20:
             prompt_file = 'meditation_prompt.txt'
         elif 20 <= current_hour < 21:
-            prompt_file = 'date_prompt.txt'
+            prompt_file = '20_money_prompt.txt'
         elif 21 <= current_hour < 22:
             prompt_file = '21_prompt.txt'
         elif 22 <= current_hour < 23:
