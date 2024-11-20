@@ -240,7 +240,7 @@ def send_scheduled_message(object_id):
 
         # Отправляем сообщение в Groq
         response = client_groq.chat.completions.create(
-            model='llama3.1-70b-versatile',
+            model='llama-3.1-70b-versatile',
             messages=[{"role": 'user', "content": full_message}],
             temperature=0
         )
