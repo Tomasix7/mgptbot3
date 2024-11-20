@@ -156,20 +156,22 @@ def send_scheduled_message(object_id):
         if object_id == "66fe7107ba9a8734f34b71cd": # мн
             logging.info("Start handle schedule instructions")
 
-            # # Этот вариант обработки серверного времени не работает на Render
-            # # Создаем часовой пояс UTC+3
-            # utc_plus_3 = pytz.FixedOffset(3 * 60)  # 3 hours * 60 minutes
-            # # Получаем текущее время в UTC+3
-            # current_time = datetime.now(utc_plus_3)
-
             # Создаем часовой пояс UTC+3
-            timezone = pytz.timezone('Europe/Moscow')  # UTC+3
+            utc_plus_3 = pytz.FixedOffset(3 * 60)  # 3 hours * 60 minutes
+            # Получаем текущее время в UTC+3
+            current_time = datetime.now(utc_plus_3)
+
+            # # Этот вариант обработки серверного времени тоже работает на Render. 
+            # # Он создан в процессе поиска бага с запуском скрипта по расписанию. 
+            # # Как выяснилось ошибка была в том, что для Срон нужно вручую обновлять версии приложения после деплоя. 
+            # # Создаем часовой пояс UTC+3
+            # timezone = pytz.timezone('Europe/Moscow')  # UTC+3
             
-            # Получаем текущее время в UTC и конвертируем в UTC+3
-            utc_now = datetime.now(pytz.UTC)
-            current_time = utc_now.astimezone(timezone)
-        
-            logging.info(f'UTC время: {utc_now}, Локальное время (UTC+3): {current_time}')
+            # # Получаем текущее время в UTC и конвертируем в UTC+3
+            # utc_now = datetime.now(pytz.UTC)
+            # current_time = utc_now.astimezone(timezone)
+            # logging.info(f'UTC время: {utc_now}, Локальное время (UTC+3): {current_time}')
+
             logging.info(f'current_time.hour = {current_time.hour}')
             
             # Добавим более подробное логирование условий
@@ -285,6 +287,3 @@ if __name__ == '__main__':
         object_id = sys.argv[1]
         logging.info(f"Запуск скрипта с object_id: {object_id}")
         send_scheduled_message(object_id)
-elif len(sys.argv) > 1:
-    logging.info("Модуль импортирован с аргументами командной строки")
-    send_scheduled_message(sys.argv[1])
