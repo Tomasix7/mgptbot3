@@ -283,4 +283,5 @@ if __name__ == '__main__':
         logging.error("Неверное количество аргументов. Ожидался один аргумент - ObjectID.")
     else:
         object_id = sys.argv[1]
+        logging.info(f"Запуск скрипта с object_id: {object_id}")
         send_scheduled_message(object_id)
