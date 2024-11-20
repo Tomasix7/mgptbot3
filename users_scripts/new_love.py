@@ -285,3 +285,6 @@ if __name__ == '__main__':
         object_id = sys.argv[1]
         logging.info(f"Запуск скрипта с object_id: {object_id}")
         send_scheduled_message(object_id)
+elif len(sys.argv) > 1:
+    logging.info("Модуль импортирован с аргументами командной строки")
+    send_scheduled_message(sys.argv[1])
