@@ -14,7 +14,7 @@ from time_zone_manager import TimeZoneManager  # Импортируем свой
 from config import client_groq, bot  # Импортируем клиента и бота из файла конфигурации
 from dialogue_storage import dialogue_storage  # Импортируем класс хранения диалогов
 from unsplash_functions import get_random_image
-from devart import send_deviantart_image
+# from devart import send_deviantart_image
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -152,11 +152,13 @@ def send_scheduled_message(object_id):
                 return  # Завершаем выполнение функции
         
         if object_id == "66fe7107ba9a8734f34b71cd": # мн
+            logging.info("Start handle schedule instructions")
             # Создаем часовой пояс UTC+3
             utc_plus_3 = pytz.FixedOffset(3 * 60)  # 3 hours * 60 minutes
             
             # Получаем текущее время в UTC+3
             current_time = datetime.now(utc_plus_3)
+            logging.info(f'current_time.hour = {current_time.hour}')
             
             # Проверяем, попадает ли время в заданный  диапазон UTC+3
             # if current_time.hour < 7 or 13 <= current_time.hour < 18:
@@ -169,7 +171,8 @@ def send_scheduled_message(object_id):
 
                 logging.info(f"Скрипт завершен: ObjectID {object_id}, время {current_time.strftime('%H:%M')} UTC+3")
                 return  # Завершаем выполнение функции
-            
+            else:
+                logging.info('Schedule instructions were ignored')
         # Получаем данные пользователя и персонажа из базы по ObjectID
         character_info, users_gender, timezone_offset, chat_id = get_user_and_character_data(object_id)
 
@@ -237,7 +240,7 @@ def send_scheduled_message(object_id):
 
         # Отправляем сообщение в Groq
         response = client_groq.chat.completions.create(
-            model='llama3-70b-8192',
+            model='llama3.1-70b-versatile',
             messages=[{"role": 'user', "content": full_message}],
             temperature=0
         )
@@ -253,7 +256,7 @@ def send_scheduled_message(object_id):
 
 if __name__ == '__main__':
     # Вызов DeviantArt функции перед send_scheduled_message
-    send_deviantart_image()
+    # send_deviantart_image()
 
     if len(sys.argv) != 2:
         logging.error("Неверное количество аргументов. Ожидался один аргумент - ObjectID.")
