@@ -136,7 +136,9 @@ def send_long_message(chat_id, bot, message):
 
 
 def send_scheduled_message(object_id):
+    logging.info(f"=== Начало выполнения send_scheduled_message для object_id: {object_id} ===")
     try:
+        logging.info("Проверка ID для временных ограничений")
         # Отключение отправки сообщения в тихие часы.
         if object_id == "670543779eed55e5c40145ea": # ал
             # Создаем часовой пояс UTC+5
@@ -153,13 +155,32 @@ def send_scheduled_message(object_id):
         
         if object_id == "66fe7107ba9a8734f34b71cd": # мн
             logging.info("Start handle schedule instructions")
+
+            # # Этот вариант обработки серверного времени не работает на Render
+            # # Создаем часовой пояс UTC+3
+            # utc_plus_3 = pytz.FixedOffset(3 * 60)  # 3 hours * 60 minutes
+            # # Получаем текущее время в UTC+3
+            # current_time = datetime.now(utc_plus_3)
+
             # Создаем часовой пояс UTC+3
-            utc_plus_3 = pytz.FixedOffset(3 * 60)  # 3 hours * 60 minutes
+            timezone = pytz.timezone('Europe/Moscow')  # UTC+3
             
-            # Получаем текущее время в UTC+3
-            current_time = datetime.now(utc_plus_3)
+            # Получаем текущее время в UTC и конвертируем в UTC+3
+            utc_now = datetime.now(pytz.UTC)
+            current_time = utc_now.astimezone(timezone)
+        
+            logging.info(f'UTC время: {utc_now}, Локальное время (UTC+3): {current_time}')
             logging.info(f'current_time.hour = {current_time.hour}')
             
+            # Добавим более подробное логирование условий
+            logging.info(f"""Проверка условий:
+            current_time.hour < 7: {current_time.hour < 7}
+            8 <= current_time.hour < 11: {8 <= current_time.hour < 11}
+            12 <= current_time.hour < 18: {12 <= current_time.hour < 18}
+            current_time.hour == 19: {current_time.hour == 19}
+            current_time.hour >= 23: {current_time.hour >= 23}
+            """)
+
             # Проверяем, попадает ли время в заданный  диапазон UTC+3
             # if current_time.hour < 7 or 13 <= current_time.hour < 18:
 
