@@ -19,7 +19,7 @@ def truncate_messages(messages, max_length=4000):
 #         request_char_count = sum(len(msg['content']) for msg in truncated_messages)
 #         logging.info(f"Truncated request character count: {request_char_count}")
         
-#         response = client_groq.chat.completions.create(model='llama3-70b-8192', messages=truncated_messages, temperature=0)
+#         response = client_groq.chat.completions.create(model='llama-3.3-70b-versatile', messages=truncated_messages, temperature=0)
         
 #         response_content = truncate_message(response.choices[0].message.content)
 #         response_char_count = len(response_content)

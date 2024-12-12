@@ -27,7 +27,7 @@ request_queue = RequestQueue()
 # Example usage in get_text_messages:
 # async def send_request_to_groq(messages, chat_id):
 #     try:
-#         response = client_groq.chat.completions.create(model='llama3-70b-8192', messages=messages, temperature=0)
+#         response = client_groq.chat.completions.create(model='llama-3.3-70b-versatile', messages=messages, temperature=0)
 #         bot.send_message(chat_id, response.choices[0].message.content)
 #         dialogue_storage.add_message(chat_id, 'assistant', response.choices[0].message.content)
 #     except Exception as e:

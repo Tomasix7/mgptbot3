@@ -177,7 +177,7 @@ def get_text_messages(message):
 
     async def send_request():
         try:
-            response = client_groq.chat.completions.create(model='llama-3.1-70b-versatile', messages=messages, temperature=0)
+            response = client_groq.chat.completions.create(model='llama-3.3-70b-versatile', messages=messages, temperature=0)
             # Редактируем сообщение с сердечком после получения ответа
             bot.edit_message_text(chat_id=message.chat.id, message_id=heart_message.message_id, text=response.choices[0].message.content)
             dialogue_storage.add_message(chat_id, 'assistant', response.choices[0].message.content)
