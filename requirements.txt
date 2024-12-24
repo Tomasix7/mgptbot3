@@ -5,3 +5,5 @@ schedule
 pymongo
 pytz
 python-dotenv
+emoji
+azure-cognitiveservices-speech
