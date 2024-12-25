@@ -17,6 +17,7 @@ from unsplash_functions import get_random_image
 import time
 import azure.cognitiveservices.speech as speechsdk
 from emoji import replace_emoji
+from config import TTS_ENABLED_USERS
 
 # from devart import send_deviantart_image # функция отключена потому что devart повторяет одни и те же картинки
 
@@ -115,14 +116,6 @@ def text_to_speech(text, chat_id, voice_name="en-US-AvaMultilingualNeural"):
         if output_file:
             time.sleep(2)
             cleanup_audio_file(output_file)
-
-TTS_ENABLED_USERS = {
-    "66fe7107ba9a8734f34b71cd": "en-US-AvaMultilingualNeural",
-    "670543779eed55e5c40145ea": "ru-RU-DmitryNeural",
-    # "670543779eed55e5c40145ea": "fr-FR-RemyMultilingualNeural",
-    "66ffe6628bdbcddf02959d21": "ru-RU-SvetlanaNeural",
-    # Add more IDs with their preferred voices
-}
 
 def process_response_with_tts(response, chat_id, bot, users_gender, use_tts=False, object_id=None):
     """
@@ -267,7 +260,7 @@ def send_scheduled_message(object_id):
             
             if (current_time.hour < 7 or 
                 (8 <= current_time.hour < 9) or 
-                (16 <= current_time.hour < 18) or 
+                (12 <= current_time.hour < 18) or 
                 current_time.hour == 19 or 
                 current_time.hour >= 23):
                 

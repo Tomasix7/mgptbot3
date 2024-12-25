@@ -9,6 +9,14 @@ from groq import Groq
 from dotenv import load_dotenv
 load_dotenv()
 
+TTS_ENABLED_USERS = {
+    "66fe7107ba9a8734f34b71cd": "en-US-AvaMultilingualNeural",
+    "670543779eed55e5c40145ea": "ru-RU-DmitryNeural",
+    # "670543779eed55e5c40145ea": "fr-FR-RemyMultilingualNeural",
+    "66ffe6628bdbcddf02959d21": "ru-RU-SvetlanaNeural",
+    # Add more IDs with their preferred voices
+}
+
 def setup_logging():
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
     logging.basicConfig(level=getattr(logging, LOG_LEVEL))
