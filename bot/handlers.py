@@ -8,6 +8,8 @@ import hashlib
 import asyncio
 import time
 import os
+from config import TTS_ENABLED_USERS
+from tts import text_to_speech, remove_emoji
 # from pymongo import MongoClient
 
 # Глобальная переменная для хранения хеша последнего сообщения для фильтрации дублей
@@ -106,31 +108,29 @@ def get_dialogue_length(message):
   # Обработчик команды для введения нового пользователя. Перенесен в отдельный файл db_handler.py
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>     TOOLS FOR TOOL USE MODEL     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+# Define a tool for browsing the internet
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>     TEXT HANDLER     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-@bot.message_handler(content_types=['text']) 
+@bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    # Уведомляем администратора о новом пользователе
     ADMIN_CHAT_ID = os.getenv('CHATID')
     notify_admin(bot, message, ADMIN_CHAT_ID)
 
     if not is_authorized(message.chat.id):
         bot.send_message(message.chat.id, "Привет 😊 Пока у нас нет доступа друг к другу 😌")
         return
-   
 
     global last_request_hash
-
-    # Отправляем сердечко до обработки сообщения
     heart_message = bot.send_message(message.chat.id, "💚")
-
-    # Генерация хеша входящего сообщения
     current_hash = hashlib.md5(message.text.encode()).hexdigest()
-    
-    # Проверка, дубликат ли это сообщение
+
     if current_hash == last_request_hash:
-        # Если сообщение дубликат, оставляем сердечко
         bot.edit_message_text(chat_id=message.chat.id, message_id=heart_message.message_id, text="❤️")
         return
     
@@ -139,52 +139,37 @@ def get_text_messages(message):
     logging.debug(f'User chat_id: {message.chat.id}')
     logging.info(f'Received message: {message.text}')
     
-    # chat_id = str(message.chat.id) 3
     chat_id = message.chat.id
     dialogue_storage.add_message(chat_id, 'user', message.text)
-   
     dialogue_history = dialogue_storage.get_messages(chat_id)
-
     max_messages = 10
     if len(dialogue_history) > max_messages:
         dialogue_history = dialogue_history[-max_messages:]
 
-    logging.info(f"Dialogue history for chat {chat_id}: {dialogue_history}")
-
-    if len(dialogue_history) == 0:
-        bot.send_message(message.from_user.id, "Поехали 🚀🏁 )")
-
-    # Обрезаем сообщения перед отправкой
     messages_for_groq = truncate_messages([
         {"role": msg["role"], "content": msg["content"]} for msg in dialogue_history
     ])
 
-    # character = get_character(str(message.chat.id))
-    character_info, character_name, users_gender, timezone = get_character(message.chat.id)
-    logging.info(f"Character Info: {character_info}")
-    logging.info(f"Character Name: {character_name}")
-    logging.info(f"User's Gender: {users_gender}")
-    logging.info(f"User's Timezone: {timezone}")
-
-    system_message = {
-        "role": "system", 
-        "content": character_info
-    }
-
+    # character_info, character_name, users_gender, timezone = get_character(message.chat.id)
+    character_info, character_name, users_gender, timezone, object_id = get_character(message.chat.id)
+    system_message = {"role": "system", "content": character_info}
     messages = [system_message] + messages_for_groq
-
-    logging.info(f'Sending messages to Groq: {messages}')
 
     async def send_request():
         try:
-            response = client_groq.chat.completions.create(model='llama-3.3-70b-versatile', messages=messages, temperature=0)
-            # Редактируем сообщение с сердечком после получения ответа
-            bot.edit_message_text(chat_id=message.chat.id, message_id=heart_message.message_id, text=response.choices[0].message.content)
-            dialogue_storage.add_message(chat_id, 'assistant', response.choices[0].message.content)
+            response = client_groq.chat.completions.create(
+                model='llama-3.3-70b-versatile', 
+                messages=messages, temperature=0
+            )
+            model_response = response.choices[0].message.content
+            bot.edit_message_text(chat_id=message.chat.id, message_id=heart_message.message_id, text=model_response)
+            dialogue_storage.add_message(chat_id, 'assistant', model_response)
+
+            # Отправка аудио
+            voice_name = TTS_ENABLED_USERS.get(str(object_id), "en-US-AvaMultilingualNeural")
+            text_to_speech(bot, model_response, chat_id, voice_name=voice_name)
         except Exception as e:
             logging.error(f'Error when sending request to Groq: {e}')
-            # Если ошибка, редактируем сообщение с сердечком на смайлы
             bot.edit_message_text(chat_id=message.chat.id, message_id=heart_message.message_id, text="Отправь мне смайлик 🙏 🥰")
 
-    # Добавляем запрос в очередь
     asyncio.run(request_queue.add_request(send_request))

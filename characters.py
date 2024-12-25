@@ -28,13 +28,16 @@ user_collection = db['users_collection']
 character_collection = db['characters']
 
 def get_character(chat_id):
+    """
+    Получение информации о персонаже и пользователя по chat_id
+    """
     logging.info(f"Attempting to get character for chat_id: {chat_id}")
-    logging.info(f"Using collection: {user_collection.name}")  # Логируем коллекцию
     # Ищем пользователя по chat_id
     user_data = user_collection.find_one({"chat_id": chat_id})
     
     if user_data:
         logging.info(f"User data found: {user_data}")
+        object_id = user_data.get("_id")  # Получаем ObjectId
         character_name = user_data.get("character")
         users_name = user_data.get("users_name", [])
         users_gender = user_data.get("users_gender")
@@ -43,21 +46,19 @@ def get_character(chat_id):
         # Ищем описание персонажа в коллекции персонажей
         character_data = character_collection.find_one({"character": character_name})
         if character_data:
-            # logging.info(f"Character data found: {character_data}")
             character_description = character_data.get("description")
         else:
             logging.warning(f"No character description found for {character_name}")
             character_description = "No description available."
         
-        # Формируем строку для промпта - описание персонажа и имена пользователя одной строкой
+        # Формируем строку для промпта
         character_info = (
             f"Prompt: {character_description} "
             f"User's names: {', '.join(users_name)}. "
         )
         
         logging.info(f"Returning character info for {character_name}")
-        # Выводим три переменные: 1. строку для промпта, 2. имя персонада, 3. пол пользователя
-        return character_info, character_name, users_gender, timezone
+        return character_info, character_name, users_gender, timezone, object_id
     else:
         logging.warning(f"No user data found for chat_id: {chat_id}")
-        return "Character not found.", None, None
+        return "Character not found.", None, None, None, None
